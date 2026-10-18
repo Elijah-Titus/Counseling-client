@@ -1,5 +1,5 @@
 import { ArrowRight, Sprout } from "lucide-react";
-import Button from "../../components/ui/Button";
+import Button from "../../components/ui/button";
 
 export default function CallToAction() {
   return (

@@ -1,5 +1,5 @@
 import { ArrowRight, Brain, Users, Sprout, Sun } from "lucide-react";
-import Button from "../../components/ui/Button";
+import Button from "../../components/ui/button";
 
 const services = [
   {

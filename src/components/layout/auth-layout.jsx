@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { CalendarDays, Lock, ShieldCheck, UserCheck } from "lucide-react";
-import Header from "../layout/Header";
+import Header from "./header";
 
 const dots =
   "absolute h-24 w-28 bg-[radial-gradient(circle,white_2.5px,transparent_2.5px)] bg-[length:16px_16px] opacity-30";
