@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Input from "../../components/ui/input";
 import Button from "../../components/ui/button";
-import { login } from "../../api/auth";
+import { login, logout } from "../../api/auth";
 import { getErrorMessage } from "../../api/axios";
+import { getHomePath, ROLES } from "../../utils/roles";
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const redirectTo = useLocation().state?.from?.pathname || "/dashboard";
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -40,8 +40,15 @@ export default function LoginForm() {
 
     try {
       setLoading(true);
-      await login({ email: form.email.trim(), password: form.password });
-      navigate(redirectTo, { replace: true });
+      const user = await login({ email: form.email.trim(), password: form.password });
+
+      if (user.role === ROLES.ADMIN) {
+        await logout();
+        setServerError("Unable to sign in. Please try again.");
+        return;
+      }
+
+      navigate(getHomePath(user.role), { replace: true });
     } catch (err) {
       setServerError(getErrorMessage(err, "Unable to sign in. Please try again."));
     } finally {

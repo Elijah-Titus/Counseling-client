@@ -1,10 +1,13 @@
 import { Navigate } from "react-router-dom";
 import LoginForm from "../../features/auth/login-form";
-import { isLoggedIn } from "../../utils/token";
+import { getStoredUser, isLoggedIn } from "../../utils/token";
+import { getHomePath } from "../../utils/roles";
 
 export default function Login() {
-  if (isLoggedIn()) {
-    return <Navigate to="/dashboard" replace />;
+  const user = getStoredUser();
+
+  if (isLoggedIn() && user?.role) {
+    return <Navigate to={getHomePath(user.role)} replace />;
   }
 
   return <LoginForm />;

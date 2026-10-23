@@ -39,9 +39,9 @@ const isCredentialRoute = (url = "") =>
 
 const forceLogout = () => {
   clearSession();
-  if (window.location.pathname !== "/login") window.location.href = "/login";
+  const loginPath = window.location.pathname.startsWith("/admin") ? "/admin/login" : "/login";
+  if (window.location.pathname !== loginPath) window.location.href = loginPath;
 };
-
 // 3. When a request fails with 401, refresh the token once and retry
 api.interceptors.response.use(
   (response) => response,

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 const variants = {
   primary: "bg-indigo-600 text-white shadow-md shadow-indigo-200 hover:bg-indigo-700",
   outline: "border border-indigo-500 text-indigo-600 hover:bg-indigo-50",
+  danger: "bg-red-600 text-white shadow-md shadow-red-200 hover:bg-red-700",
 };
 
 const sizes = {
