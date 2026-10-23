@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 import AdminSidebar from "./admin-sidebar";
 import AdminHeader from "./admin-header";
+import ConfirmDialog from "../common/confirm-dialog";
 import { logout } from "../../api/auth";
 import { getStoredUser } from "../../utils/token";
 
@@ -12,13 +13,21 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   const user = getStoredUser();
   const title = navItems.find((item) => pathname.startsWith(item.to))?.label || "Admin";
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/admin/login", { replace: true });
+    setLogoutLoading(true);
+    try {
+      await logout();
+      navigate("/admin/login", { replace: true });
+    } finally {
+      setLogoutLoading(false);
+      setLogoutDialogOpen(false);
+    }
   };
 
   return (
@@ -28,7 +37,10 @@ export default function AdminLayout() {
         user={user}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        onLogout={handleLogout}
+        onLogout={() => {
+          setSidebarOpen(false);
+          setLogoutDialogOpen(true);
+        }}
       />
 
       <div className="lg:pl-64">
@@ -37,6 +49,17 @@ export default function AdminLayout() {
           <Outlet />
         </main>
       </div>
+
+      <ConfirmDialog
+        open={logoutDialogOpen}
+        title="Sign out?"
+        message="Are you sure you want to sign out of your administrator account?"
+        confirmLabel="Sign out"
+        danger
+        loading={logoutLoading}
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutDialogOpen(false)}
+      />
     </div>
   );
 }

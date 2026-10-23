@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut, ShieldCheck } from "lucide-react";
+import ConfirmDialog from "../../components/common/confirm-dialog";
 import Button from "../../components/ui/button";
 import { logout } from "../../api/auth";
 import { getStoredUser } from "../../utils/token";
@@ -7,10 +9,18 @@ import { getStoredUser } from "../../utils/token";
 export default function AdminHome() {
   const navigate = useNavigate();
   const name = getStoredUser()?.name;
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/admin/login", { replace: true });
+    setLogoutLoading(true);
+    try {
+      await logout();
+      navigate("/admin/login", { replace: true });
+    } finally {
+      setLogoutLoading(false);
+      setLogoutDialogOpen(false);
+    }
   };
 
   return (
@@ -26,10 +36,21 @@ export default function AdminHome() {
           {name ? `You're signed in as ${name}. ` : "You're signed in. "}
           The counselor management tools are the next thing we're building.
         </p>
-        <Button onClick={handleLogout} className="mt-8">
+        <Button onClick={() => setLogoutDialogOpen(true)} className="mt-8">
           <LogOut size={16} /> Sign out
         </Button>
       </div>
+
+      <ConfirmDialog
+        open={logoutDialogOpen}
+        title="Sign out?"
+        message="Are you sure you want to sign out of your administrator account?"
+        confirmLabel="Sign out"
+        danger
+        loading={logoutLoading}
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutDialogOpen(false)}
+      />
     </div>
   );
 }

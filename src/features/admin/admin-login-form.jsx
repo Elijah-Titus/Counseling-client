@@ -61,7 +61,7 @@ export default function AdminLoginForm() {
     <div>
       <h1 className="text-center text-2xl font-extrabold text-blue-950">Admin sign in</h1>
       <p className="mt-2 text-center text-sm text-slate-600">
-        Sign in with your administrator account to manage MindWell.
+        Sign in as an administrator
       </p>
 
       {serverError && (

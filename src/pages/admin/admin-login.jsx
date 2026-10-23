@@ -21,9 +21,6 @@ export default function AdminLogin() {
         <div className="rounded-3xl bg-white p-8 shadow-2xl sm:p-10">
           <div className="flex flex-col items-center gap-4">
             <Logo />
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold tracking-widest text-indigo-700">
-              <ShieldCheck size={14} /> ADMIN PORTAL
-            </span>
           </div>
 
           <div className="mt-6">

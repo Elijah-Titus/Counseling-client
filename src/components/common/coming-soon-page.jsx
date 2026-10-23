@@ -1,17 +1,27 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Clock, KeyRound, LogOut } from "lucide-react";
 import Logo from "../ui/logo";
 import Button from "../ui/button";
+import ConfirmDialog from "./confirm-dialog";
 import { logout } from "../../api/auth";
 import { getStoredUser } from "../../utils/token";
 
 export default function ComingSoonPage({ heading, accent, message }) {
   const navigate = useNavigate();
   const firstName = getStoredUser()?.name?.split(" ")[0];
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login", { replace: true });
+    setLogoutLoading(true);
+    try {
+      await logout();
+      navigate("/login", { replace: true });
+    } finally {
+      setLogoutLoading(false);
+      setLogoutDialogOpen(false);
+    }
   };
 
   return (
@@ -42,12 +52,23 @@ export default function ComingSoonPage({ heading, accent, message }) {
             <Button to="/change-password" variant="outline">
               <KeyRound size={16} /> Change password
             </Button>
-            <Button onClick={handleLogout}>
+            <Button onClick={() => setLogoutDialogOpen(true)}>
               <LogOut size={16} /> Sign out
             </Button>
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={logoutDialogOpen}
+        title="Sign out?"
+        message="Are you sure you want to sign out of your account?"
+        confirmLabel="Sign out"
+        danger
+        loading={logoutLoading}
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutDialogOpen(false)}
+      />
     </div>
   );
 }
