@@ -19,6 +19,7 @@ import Counselors from "../pages/admin/counselors";
 import CounselorDetails from "../pages/admin/counselor-details";
 import AdminAppointments from "../pages/admin/appointments";
 import { ROLES } from "../utils/roles";
+import CounselorLeave from "../pages/counselor/counselor-leave";
 
 export default function AppRoutes() {
   return (
@@ -61,6 +62,7 @@ export default function AppRoutes() {
         <Route index element={<Navigate to="/counselor/appointments" replace />} />
         <Route path="appointments" element={<CounselorAppointments />} />
         <Route path="appointments/:id" element={<AppointmentDetails />} />
+        <Route path="leave" element={<CounselorLeave />} />
       </Route>
 
       {/* Any signed-in role */}

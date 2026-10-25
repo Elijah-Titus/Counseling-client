@@ -97,3 +97,13 @@ export const toLagosOffsetIso = (iso) => {
   );
   return toLagosIso(toLagosDateString(iso), hour);
 };
+
+// A short date like "Mon 26 Oct 2026" in Lagos time
+export const formatLagosDateShort = (iso) =>
+  new Intl.DateTimeFormat("en-GB", {
+    timeZone: TZ,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(iso));

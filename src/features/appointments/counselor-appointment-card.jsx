@@ -39,9 +39,14 @@ export default function CounselorAppointmentCard({ appointment, onReschedule }) 
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Link to={`/counselor/appointments/${a.id}`} className="transition hover:text-indigo-600 hover:underline">
-            {a.topic}
-          </Link>
+          <h3 className="font-bold text-blue-950">
+            <Link
+              to={`/counselor/appointments/${a.id}`}
+              className="transition hover:text-indigo-600 hover:underline"
+            >
+              {a.topic}
+            </Link>
+          </h3>
             <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${badge.style}`}>
               {badge.label}
             </span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, CalendarOff } from "lucide-react";
 import PortalSidebar from "./portal-sidebar";
 import PortalHeader from "./portal-header";
 import { logout } from "../../api/auth";
@@ -8,11 +8,12 @@ import { getStoredUser } from "../../utils/token";
 
 const navItems = [
   { label: "My appointments", to: "/counselor/appointments", icon: CalendarDays },
+  { label: "Leave", to: "/counselor/leave", icon: CalendarOff },
 ];
 
 export default function CounselorLayout() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname     } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const user = getStoredUser();
