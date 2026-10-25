@@ -1,4 +1,5 @@
 import { KeyRound, UserCheck, UserX } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -25,7 +26,12 @@ export default function CounselorsTable({ counselors, onToggleStatus, onResetPas
                     {c.name?.[0]?.toUpperCase() || "?"}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-blue-950">{c.name}</p>
+                    <Link
+                      to={`/admin/counselors/${c.id}`}
+                      className="block truncate font-semibold text-blue-950 transition hover:text-indigo-600 hover:underline"
+                    >
+                      {c.name}
+                    </Link>
                     <p className="truncate text-xs text-slate-500">{c.email}</p>
                   </div>
                 </div>

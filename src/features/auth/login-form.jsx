@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Input from "../../components/ui/input";
 import Button from "../../components/ui/button";
-import { login, logout } from "../../api/auth";
+import { login } from "../../api/auth";
 import { getErrorMessage } from "../../api/axios";
-import { getHomePath, ROLES } from "../../utils/roles";
+import { ROLES, getHomePath } from "../../utils/roles";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -40,17 +40,17 @@ export default function LoginForm() {
 
     try {
       setLoading(true);
-      const user = await login({ email: form.email.trim(), password: form.password });
-
-      if (user.role === ROLES.ADMIN) {
-        await logout();
-        setServerError("Unable to sign in. Please try again.");
-        return;
-      }
-
+      const user = await login(
+        { email: form.email.trim().toLowerCase(), password: form.password },
+        { blockedRoles: [ROLES.ADMIN] }
+      );
       navigate(getHomePath(user.role), { replace: true });
     } catch (err) {
-      setServerError(getErrorMessage(err, "Unable to sign in. Please try again."));
+      setServerError(
+        err.code === "ROLE_BLOCKED"
+          ? "Invalid email or password."
+          : getErrorMessage(err, "Unable to sign in. Please try again.")
+      );
     } finally {
       setLoading(false);
     }

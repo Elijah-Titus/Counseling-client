@@ -91,7 +91,7 @@ export default function RegisterForm() {
   return (
     <div>
       <h1 className="text-3xl font-extrabold text-blue-950">
-        Create your <span className="text-indigo-500">account</span>
+        Create <span className="text-indigo-500">account</span>
       </h1>
       <p className="mt-2 text-sm text-slate-600">
         Take the first step towards a healthier, happier you.
@@ -242,7 +242,7 @@ export default function RegisterForm() {
       <p className="mt-6 text-center text-sm text-slate-600">
         Already have an account?{" "}
         <Link to="/login" className="font-semibold text-indigo-600 hover:underline">
-          Sign in
+          Log in
         </Link>
       </p>
     </div>

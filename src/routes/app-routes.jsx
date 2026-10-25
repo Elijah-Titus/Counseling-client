@@ -1,26 +1,34 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import PublicLayout from "../components/layout/public-layout";
 import AuthLayout from "../components/layout/auth-layout";
+import ClientLayout from "../components/layout/client-layout";
+import CounselorLayout from "../components/layout/counselor-layout";
 import AdminLayout from "../components/layout/admin-layout";
 import ProtectedRoute from "../components/common/protected-route";
 import RoleRoute from "../components/common/role-route";
 import Landing from "../pages/public/landing";
 import Login from "../pages/auth/login";
 import Register from "../pages/auth/register";
-import Dashboard from "../pages/dashboard/dashboard";
-import CounselorHome from "../pages/counselor/counselor-home";
+import MyAppointments from "../pages/client/my-appointments";
+import BookAppointment from "../pages/client/book-appointment";
+import CounselorAppointments from "../pages/counselor/counselor-appointments";
+import AppointmentDetails from "../pages/shared/appointment-details";
 import ChangePassword from "../pages/account/change-password";
 import AdminLogin from "../pages/admin/admin-login";
 import Counselors from "../pages/admin/counselors";
+import CounselorDetails from "../pages/admin/counselor-details";
+import AdminAppointments from "../pages/admin/appointments";
 import { ROLES } from "../utils/roles";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public site */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Landing />} />
       </Route>
 
+      {/* Sign in and register */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -31,20 +39,29 @@ export default function AppRoutes() {
         path="/dashboard"
         element={
           <RoleRoute role={ROLES.CLIENT}>
-            <Dashboard />
+            <ClientLayout />
           </RoleRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to="/dashboard/appointments" replace />} />
+        <Route path="appointments" element={<MyAppointments />} />
+        <Route path="appointments/:id" element={<AppointmentDetails />} />
+        <Route path="book" element={<BookAppointment />} />
+      </Route>
 
       {/* Counselor area */}
       <Route
         path="/counselor"
         element={
           <RoleRoute role={ROLES.COUNSELOR}>
-            <CounselorHome />
+            <CounselorLayout />
           </RoleRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to="/counselor/appointments" replace />} />
+        <Route path="appointments" element={<CounselorAppointments />} />
+        <Route path="appointments/:id" element={<AppointmentDetails />} />
+      </Route>
 
       {/* Any signed-in role */}
       <Route
@@ -68,6 +85,8 @@ export default function AppRoutes() {
       >
         <Route index element={<Navigate to="/admin/counselors" replace />} />
         <Route path="counselors" element={<Counselors />} />
+        <Route path="counselors/:id" element={<CounselorDetails />} />
+        <Route path="appointments" element={<AdminAppointments />} />
       </Route>
     </Routes>
   );

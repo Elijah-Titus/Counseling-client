@@ -7,8 +7,19 @@ const startSession = ({ user, accessToken, refreshToken }) => {
   return user;
 };
 
-export const login = async (credentials) => {
+export const login = async (credentials, { blockedRoles = [] } = {}) => {
   const res = await api.post("/auth/signin", credentials);
+  const { user, refreshToken } = res.data.data;
+
+  if (blockedRoles.includes(user.role)) {
+    // End the session the server just created, without ever saving it here
+    await api.post("/auth/signout", { refreshToken }).catch(() => {});
+
+    const error = new Error("This role cannot sign in here");
+    error.code = "ROLE_BLOCKED";
+    throw error;
+  }
+
   return startSession(res.data.data);
 };
 

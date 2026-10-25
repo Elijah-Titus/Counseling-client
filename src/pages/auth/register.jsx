@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import LoginForm from "../../features/auth/login-form";
+import RegisterForm from "../../features/auth/register-form";
 import { getStoredUser, isLoggedIn } from "../../utils/token";
 import { getHomePath } from "../../utils/roles";
 
@@ -10,5 +10,5 @@ export default function Login() {
     return <Navigate to={getHomePath(user.role)} replace />;
   }
 
-  return <LoginForm />;
+  return <RegisterForm />;
 }
