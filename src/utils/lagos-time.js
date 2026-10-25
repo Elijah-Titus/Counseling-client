@@ -107,3 +107,12 @@ export const formatLagosDateShort = (iso) =>
     month: "short",
     year: "numeric",
   }).format(new Date(iso));
+
+  // "Mon 26 Oct 2026 · 9:00 AM – 11:00 AM", or both ends when the leave spans several days
+export const formatLagosPeriod = (startAt, endAt) => {
+  const sameDay = toLagosDateString(startAt) === toLagosDateString(endAt);
+
+  return sameDay
+    ? `${formatLagosDateShort(startAt)} · ${formatLagosTime(startAt)} – ${formatLagosTime(endAt)}`
+    : `${formatLagosDateShort(startAt)}, ${formatLagosTime(startAt)} → ${formatLagosDateShort(endAt)}, ${formatLagosTime(endAt)}`;
+};

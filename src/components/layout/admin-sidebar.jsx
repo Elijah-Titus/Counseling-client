@@ -32,7 +32,7 @@ export default function AdminSidebar({ items, user, open, onClose, onLogout }) {
         </div>
 
         <nav className="mt-8 flex flex-1 flex-col gap-1">
-          {items.map(({ label, to, icon: Icon }) => (
+          {items.map(({ label, to, icon: Icon, badge }) => (
             <NavLink
               key={to}
               to={to}
@@ -47,6 +47,11 @@ export default function AdminSidebar({ items, user, open, onClose, onLogout }) {
             >
               <Icon size={18} />
               {label}
+              {badge > 0 && (
+                <span className="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                  {badge}
+                </span>
+              )}
             </NavLink>
           ))}
         </nav>

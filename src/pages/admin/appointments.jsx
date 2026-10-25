@@ -47,17 +47,19 @@ function FilterChip({ label, onRemove }) {
 }
 
 export default function AdminAppointments() {
-  const [searchParams] = useSearchParams();
+const [searchParams] = useSearchParams();
 const [filters, setFilters] = useState(() => {
   const counselorId = searchParams.get("counselorId");
-  if (!counselorId) return emptyFilters;
+  const clientId = searchParams.get("clientId");
 
   return {
     ...emptyFilters,
-    counselor: {
-      id: counselorId,
-      name: searchParams.get("counselorName") || "Selected counselor",
-    },
+    counselor: counselorId
+      ? { id: counselorId, name: searchParams.get("counselorName") || "Selected counselor" }
+      : null,
+    client: clientId
+      ? { id: clientId, name: searchParams.get("clientName") || "Selected client" }
+      : null,
   };
 });
   const [items, setItems] = useState([]);

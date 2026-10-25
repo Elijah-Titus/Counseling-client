@@ -68,3 +68,25 @@ export const getCounselor = async (id) => {
   const res = await api.get(`/admin/counselors/${id}`);
   return res.data.data; // { id, name, email, isActive, dateOfBirth, yearsOfExperience, gender, avatar, createdAt }
 };
+
+export const getAdminLeaves = async ({ status = "", counselorId, page = 1, limit = 10 } = {}) => {
+  const params = { page, limit };
+  if (status) params.status = status;
+  if (counselorId) params.counselorId = counselorId;
+
+  const res = await api.get("/admin/leaves", { params });
+  return res.data.data; // { items, total, page, limit }
+};
+
+export const getAdminLeave = async (id) => {
+  const res = await api.get(`/admin/leaves/${id}`);
+  return res.data.data; // the leave, plus appointments[] when it is pending
+};
+
+export const decideLeave = async (id, { status, note }) => {
+  const body = { status };
+  if (status === "DECLINED" && note) body.note = note;
+
+  const res = await api.patch(`/admin/leaves/${id}/decision`, body);
+  return res.data.data; // the leave, plus reassigned when approved
+};

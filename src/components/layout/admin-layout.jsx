@@ -1,20 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { CalendarDays, Users } from "lucide-react";
+import { CalendarDays, CalendarOff, Users } from "lucide-react";
 import AdminSidebar from "./admin-sidebar";
 import AdminHeader from "./admin-header";
 import { logout } from "../../api/auth";
+import { getAdminLeaves } from "../../api/admin";
 import { getStoredUser } from "../../utils/token";
-
-const navItems = [
-  { label: "Counselors", to: "/admin/counselors", icon: Users },
-  { label: "Appointments", to: "/admin/appointments", icon: CalendarDays },
-];
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingLeave, setPendingLeave] = useState(0);
+
+  // Count the requests waiting for a decision, and refresh it whenever the admin moves to another page
+  useEffect(() => {
+    let cancelled = false;
+
+    getAdminLeaves({ status: "PENDING", page: 1, limit: 1 })
+      .then((data) => {
+        if (!cancelled) setPendingLeave(data.total);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+
+  const navItems = [
+    { label: "Counselors", to: "/admin/counselors", icon: Users },
+    { label: "Appointments", to: "/admin/appointments", icon: CalendarDays },
+    { label: "Leave requests", to: "/admin/leave", icon: CalendarOff, badge: pendingLeave },
+  ];
 
   const user = getStoredUser();
   const title = navItems.find((item) => pathname.startsWith(item.to))?.label || "Admin";
