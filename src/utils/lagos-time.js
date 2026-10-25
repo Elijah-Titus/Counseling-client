@@ -87,3 +87,13 @@ export const addDaysToDateString = (date, days) => {
   result.setUTCDate(result.getUTCDate() + days);
   return result.toISOString().slice(0, 10);
 };
+
+// Writes a UTC slot time in the "+01:00" form used in the API's booking example
+export const toLagosOffsetIso = (iso) => {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }).format(
+      new Date(iso)
+    )
+  );
+  return toLagosIso(toLagosDateString(iso), hour);
+};

@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { AlertCircle, CalendarCheck, CheckCircle2, Info, Loader2 } from "lucide-react";
 import Input from "../../components/ui/input";
 import Textarea from "../../components/ui/textarea";
 import Button from "../../components/ui/button";
 import { bookAppointment, getAvailability } from "../../api/appointments";
 import { getErrorMessage } from "../../api/axios";
-import { formatLagosDate, formatLagosTime, getLagosTomorrow } from "../../utils/lagos-time";
+import {
+  formatLagosDate,
+  formatLagosTime,
+  getLagosTomorrow,
+  toLagosOffsetIso,
+} from "../../utils/lagos-time";
 
 const durations = [1, 2, 3, 4];
 const emptyForm = { topic: "", description: "" };
@@ -105,15 +109,21 @@ export default function BookAppointment() {
 
     try {
       setSubmitting(true);
-      const appointment = await bookAppointment({
-        startAt: selected.startAt,
+
+      const payload = {
+        startAt: toLagosOffsetIso(selected.startAt),
         hours,
         topic: form.topic.trim(),
         description: form.description.trim(),
-      });
+      };
+      console.log("Booking request:", payload); // temporary, remove after testing
+
+      const appointment = await bookAppointment(payload);
       setBooked(appointment);
     } catch (err) {
       const status = err.response?.status;
+      console.log("Booking failed:", status, err.response?.data); // temporary, remove after testing
+
       setServerError(
         getErrorMessage(
           err,
