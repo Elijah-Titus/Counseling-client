@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
-import MeetLinkForm from "../../features/appointments/meet-link-form";
+import { canRecordOutcome, getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
 import JoinSession from "../../features/appointments/join-session";
 import { getStoredUser } from "../../utils/token";
 import {
@@ -15,11 +14,12 @@ import {
 import Button from "../../components/ui/button";
 import ConfirmDialog from "../../components/common/confirm-dialog";
 import RescheduleModal from "../../features/appointments/reschedule-modal";
+import ReportModal from "../../features/reports/report-modal";
+import ReportPanel from "../../features/reports/report-panel";
 import { cancelAppointment, getAppointment } from "../../api/appointments";
 import { getErrorMessage } from "../../api/axios";
 import { canStillCancel, formatLagosDate, formatLagosTime } from "../../utils/lagos-time";
 import { ROLES } from "../../utils/roles";
-
 
 function Row({ label, children }) {
   return (
@@ -45,6 +45,7 @@ export default function AppointmentDetails() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [outcomeOpen, setOutcomeOpen] = useState(false);
 
   const reload = () => setReloadKey((key) => key + 1);
 
@@ -143,12 +144,13 @@ export default function AppointmentDetails() {
   const a = appointment;
   const hours = Math.round((new Date(a.endAt) - new Date(a.startAt)) / 3600000);
 
-   const badge = getAppointmentBadge(a, isCounselor ? "COUNSELOR" : "CLIENT");
+  const badge = getAppointmentBadge(a, isCounselor ? "COUNSELOR" : "CLIENT");
 
   const isScheduled = isUpcoming(a);
   const canCancel = !isCounselor && isScheduled && canStillCancel(a.startAt);
   const canReschedule =
     isCounselor && isScheduled && !a.originalStartAt && Date.now() < new Date(a.startAt).getTime();
+  const canRecord = isCounselor && canRecordOutcome(a);
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -221,21 +223,27 @@ export default function AppointmentDetails() {
       {!isCounselor && <JoinSession appointment={a} />}
 
       {isCounselor && (
-        <section className="rounded-3xl bg-violet-50/70 p-6 shadow-sm sm:p-8">
-          <h3 className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-slate-500">
-            <Lock size={14} /> Private notes
-          </h3>
-          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-700">
-            {a.notes || "No notes for this session yet."}
-          </p>
-        </section>
+        <ReportPanel
+          appointmentId={a.id}
+          status={a.status}
+          refreshKey={reloadKey}
+          onEdit={canRecord ? () => setOutcomeOpen(true) : undefined}
+        />
       )}
 
-      {(canCancel || canReschedule || (!isCounselor && isScheduled)) && (
+      {(canCancel || canReschedule || canRecord || (!isCounselor && isScheduled)) && (
         <section className="flex flex-wrap items-center gap-3">
           {canCancel && (
             <Button variant="danger" onClick={() => setCancelOpen(true)}>
               Cancel session
+            </Button>
+          )}
+          {canRecord && (
+            <Button
+              variant={a.status === "AWAITING" ? "primary" : "outline"}
+              onClick={() => setOutcomeOpen(true)}
+            >
+              {a.status === "AWAITING" ? "Record outcome" : "Edit outcome"}
             </Button>
           )}
           {canReschedule && (
@@ -272,6 +280,24 @@ export default function AppointmentDetails() {
             showNotice(
               "success",
               `Session moved to ${formatLagosDate(updated.startAt)} at ${formatLagosTime(updated.startAt)}. The client has been notified.`
+            );
+            reload();
+          }}
+        />
+      )}
+
+      {outcomeOpen && (
+        <ReportModal
+          key={a.id}
+          appointment={a}
+          onClose={() => setOutcomeOpen(false)}
+          onSaved={(result) => {
+            setOutcomeOpen(false);
+            showNotice(
+              "success",
+              result.status === "NO_SHOW"
+                ? "Saved: the client didn't attend this session."
+                : "Outcome and report saved. The session is marked completed."
             );
             reload();
           }}

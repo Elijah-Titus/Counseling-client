@@ -116,3 +116,12 @@ export const formatLagosPeriod = (startAt, endAt) => {
     ? `${formatLagosDateShort(startAt)} · ${formatLagosTime(startAt)} – ${formatLagosTime(endAt)}`
     : `${formatLagosDateShort(startAt)}, ${formatLagosTime(startAt)} → ${formatLagosDateShort(endAt)}, ${formatLagosTime(endAt)}`;
 };
+
+// The Lagos clock time of a timestamp as "HH:mm", for time inputs
+export const toLagosTimeInput = (iso) =>
+  new Intl.DateTimeFormat("en-GB", {
+    timeZone: TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(new Date(iso));

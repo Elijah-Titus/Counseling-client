@@ -33,3 +33,8 @@ export const getAppointmentBadge = (appointment, viewer = "CLIENT") => {
   if (appointment.overdue) return { label: "Report overdue", style: styles.red };
   return { label: "Report due", style: styles.amber };
 };
+
+// A counselor can record or correct the outcome once the session has started
+export const canRecordOutcome = (appointment) =>
+  ["AWAITING", "COMPLETED", "NO_SHOW"].includes(appointment.status) &&
+  Date.now() >= new Date(appointment.startAt).getTime();

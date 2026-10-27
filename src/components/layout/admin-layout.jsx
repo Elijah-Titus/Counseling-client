@@ -43,7 +43,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(to_bottom,#dbeafe,#e8efff,#eef2ff)] text-slate-700">
+    <div className="authenticated-theme min-h-screen bg-[linear-gradient(to_bottom,#dbeafe,#e8efff,#eef2ff)] text-slate-700">
       <AdminSidebar
         items={navItems}
         user={user}

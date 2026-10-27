@@ -1,13 +1,8 @@
 import { Fragment, useState } from "react";
-import { ChevronDown, Lock } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { formatLagosDate, formatLagosTime, getLagosDateParts } from "../../utils/lagos-time";
 import { getAppointmentBadge } from "../../utils/appointment-status";
-
-const statusInfo = {
-  AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
-  COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
-  CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
-};
+import ReportPanel from "../reports/report-panel";
 
 const nameButton =
   "text-left font-semibold text-blue-950 transition hover:text-indigo-600 hover:underline";
@@ -98,24 +93,33 @@ export default function AdminAppointmentsTable({
                 {open && (
                   <tr className="border-b border-indigo-50 bg-indigo-50/40">
                     <td colSpan={6} className="px-4 py-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                          Message from client
-                        </p>
-                        <p className="mt-1 text-sm leading-relaxed text-slate-600">{a.description}</p>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Message from client
+                          </p>
+                          <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                            {a.description}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1 text-sm text-slate-600">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            History
+                          </p>
+                          <p>Booked on {formatLagosDate(a.createdAt)}</p>
+                          {a.originalStartAt && (
+                            <p>
+                              Originally {formatLagosDate(a.originalStartAt)} at{" "}
+                              {formatLagosTime(a.originalStartAt)}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="space-y-1 text-sm text-slate-600">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">History</p>
-                        <p>Booked on {formatLagosDate(a.createdAt)}</p>
-                        {a.originalStartAt && (
-                          <p>
-                            Originally {formatLagosDate(a.originalStartAt)} at {formatLagosTime(a.originalStartAt)}
-                          </p>
-                        )}
+                      <div className="mt-4">
+                        <ReportPanel appointmentId={a.id} status={a.status} compact />
                       </div>
-                    </div>
                     </td>
                   </tr>
                 )}

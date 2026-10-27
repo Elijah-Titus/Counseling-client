@@ -4,6 +4,7 @@ import Button from "../../components/ui/button";
 import Pagination from "../../components/ui/pagination";
 import CounselorAppointmentCard from "../../features/appointments/counselor-appointment-card";
 import RescheduleModal from "../../features/appointments/reschedule-modal";
+import ReportModal from "../../features/reports/report-modal";
 import { getAppointments } from "../../api/appointments";
 import { getErrorMessage } from "../../api/axios";
 import { formatLagosDate, formatLagosTime } from "../../utils/lagos-time";
@@ -26,6 +27,7 @@ export default function CounselorAppointments() {
 
   const [notice, setNotice] = useState(null);
   const [target, setTarget] = useState(null);
+  const [outcomeTarget, setOutcomeTarget] = useState(null);
 
   const reload = () => setReloadKey((key) => key + 1);
 
@@ -70,6 +72,17 @@ export default function CounselorAppointments() {
     showNotice(
       "success",
       `Session moved to ${formatLagosDate(updated.startAt)} at ${formatLagosTime(updated.startAt)}. The client has been notified.`
+    );
+    reload();
+  };
+
+  const handleOutcomeSaved = (result) => {
+    setOutcomeTarget(null);
+    showNotice(
+      "success",
+      result.status === "NO_SHOW"
+        ? "Saved: the client didn't attend this session."
+        : "Outcome and report saved. The session is marked completed."
     );
     reload();
   };
@@ -141,6 +154,7 @@ export default function CounselorAppointments() {
                   key={appointment.id}
                   appointment={appointment}
                   onReschedule={setTarget}
+                  onRecordOutcome={setOutcomeTarget}
                 />
               ))}
             </ul>
@@ -164,6 +178,15 @@ export default function CounselorAppointments() {
           appointment={target}
           onClose={() => setTarget(null)}
           onRescheduled={handleRescheduled}
+        />
+      )}
+
+      {outcomeTarget && (
+        <ReportModal
+          key={outcomeTarget.id}
+          appointment={outcomeTarget}
+          onClose={() => setOutcomeTarget(null)}
+          onSaved={handleOutcomeSaved}
         />
       )}
     </div>

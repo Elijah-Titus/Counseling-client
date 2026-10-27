@@ -1,24 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, Clock, History, Lock, User, Video } from "lucide-react";
-import { getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
+import { ChevronDown, Clock, History, User, Video } from "lucide-react";
+import { canRecordOutcome, getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
 import MeetLinkForm from "../../features/appointments/meet-link-form";
 import { normalizeMeetLink } from "../../utils/meet-link";
+
 import {
   formatLagosDate,
   formatLagosTime,
   getLagosDateParts,
 } from "../../utils/lagos-time";
 
-// const statusInfo = {
-//   AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
-//   COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
-//   CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
-// };
-
 export default function CounselorAppointmentCard({
   appointment,
   onReschedule,
+  onRecordOutcome,
   allAppointments = [],
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -46,11 +42,12 @@ export default function CounselorAppointmentCard({
   const { day, month, weekday } = getLagosDateParts(a.startAt);
   const hours = Math.round((new Date(a.endAt) - new Date(a.startAt)) / 3600000);
 
-   const badge = getAppointmentBadge(a, "COUNSELOR");
-   const isScheduled = isUpcoming(a);
+  const badge = getAppointmentBadge(a, "COUNSELOR");
+  const isScheduled = isUpcoming(a);
   const alreadyMoved = Boolean(a.originalStartAt);
   const notStarted = Date.now() < new Date(a.startAt).getTime();
   const canReschedule = isScheduled && !alreadyMoved && notStarted;
+  const canRecord = canRecordOutcome(a);
 
   return (
     <li className="rounded-2xl bg-white/80 p-4 sm:p-5">
@@ -62,14 +59,14 @@ export default function CounselorAppointmentCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-bold text-blue-950">
-            <Link
-              to={`/counselor/appointments/${a.id}`}
-              className="transition hover:text-indigo-600 hover:underline"
-            >
-              {a.topic}
-            </Link>
-          </h3>
+            <h3 className="font-bold text-blue-950">
+              <Link
+                to={`/counselor/appointments/${a.id}`}
+                className="transition hover:text-indigo-600 hover:underline"
+              >
+                {a.topic}
+              </Link>
+            </h3>
             <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${badge.style}`}>
               {badge.label}
             </span>
@@ -111,47 +108,56 @@ export default function CounselorAppointmentCard({
         </div>
       )}
 
-        {expanded && (
-          <div className="mt-3 rounded-xl bg-indigo-50/60 p-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Message from {a.client?.name}
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-slate-600">{a.description}</p>
-          </div>
-        )}
+      {expanded && (
+        <div className="mt-3 rounded-xl bg-indigo-50/60 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Message from {a.client?.name}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-slate-600">{a.description}</p>
+        </div>
+      )}
 
-        {expanded && isScheduled && (
-          <div className="mt-3">
+      {expanded && isScheduled && (
+        <div className="mt-3">
           <MeetLinkForm
             appointment={a}
             getConflict={getLinkConflict}
             onSaved={(updated) => setLinkAdded(Boolean(updated.meetLink))}
           />
-          </div>
-        )}
+        </div>
+      )}
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <button
-          onClick={() => setExpanded(!expanded)}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:underline"
+          onClick={() => setExpanded((v) => !v)}
+          className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-indigo-600"
         >
           {expanded ? "Hide details" : "Show details"}
           <ChevronDown size={14} className={`transition ${expanded ? "rotate-180" : ""}`} />
         </button>
 
-        {canReschedule ? (
-          <button
-            onClick={() => onReschedule(a)}
-            className="rounded-lg px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
-          >
-            Reschedule
-          </button>
-        ) : (
-          isScheduled &&
-          alreadyMoved && (
-            <p className="text-xs text-slate-400">Already rescheduled once.</p>
-          )
-        )}
+        <div className="flex flex-wrap items-center gap-1">
+          {canRecord && (
+            <button
+              onClick={() => onRecordOutcome(a)}
+              className="rounded-lg px-3 py-1.5 text-xs font-semibold text-violet-700 transition hover:bg-violet-50"
+            >
+              {a.status === "AWAITING" ? "Record outcome" : "Edit outcome"}
+            </button>
+          )}
+
+          {canReschedule ? (
+            <button
+              onClick={() => onReschedule(a)}
+              className="rounded-lg px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
+            >
+              Reschedule
+            </button>
+          ) : (
+            isScheduled &&
+            alreadyMoved && <p className="text-xs text-slate-400">Already rescheduled once.</p>
+          )}
+        </div>
       </div>
     </li>
   );

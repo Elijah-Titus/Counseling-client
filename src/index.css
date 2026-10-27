@@ -1,5 +1,72 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
 body {
   font-family: "Plus Jakarta Sans", sans-serif;
+  background: #f8fafc;
+}
+
+html.dark body {
+  background: #020817;
+}
+
+html.dark .authenticated-theme {
+  background-color: #020817 !important;
+  background-image: none !important;
+  color: #cbd5e1;
+}
+
+html.dark .authenticated-theme [class*="bg-white"],
+html.dark .authenticated-theme [class~="bg-indigo-50"],
+html.dark .authenticated-theme [class~="bg-indigo-50/60"],
+html.dark .authenticated-theme [class~="bg-violet-50/70"] {
+  background-color: #111827 !important;
+}
+
+html.dark .authenticated-theme [class~="bg-slate-100"],
+html.dark .authenticated-theme [class~="bg-slate-200"],
+html.dark .authenticated-theme [class~="bg-indigo-100"],
+html.dark .authenticated-theme [class~="bg-emerald-100"],
+html.dark .authenticated-theme [class~="bg-amber-100"],
+html.dark .authenticated-theme [class~="bg-red-50"],
+html.dark .authenticated-theme [class~="bg-amber-50"] {
+  background-color: #1e293b !important;
+}
+
+html.dark .authenticated-theme [class~="text-blue-950"],
+html.dark .authenticated-theme [class~="text-slate-700"],
+html.dark .authenticated-theme [class~="text-slate-600"] {
+  color: #e2e8f0 !important;
+}
+
+html.dark .authenticated-theme [class~="text-slate-500"],
+html.dark .authenticated-theme [class~="text-slate-400"] {
+  color: #94a3b8 !important;
+}
+
+html.dark .authenticated-theme [class~="border-white/40"],
+html.dark .authenticated-theme [class~="border-white/60"],
+html.dark .authenticated-theme [class~="border-indigo-100"],
+html.dark .authenticated-theme [class~="border-slate-200"] {
+  border-color: #334155 !important;
+}
+
+html.dark .authenticated-theme input,
+html.dark .authenticated-theme textarea,
+html.dark .authenticated-theme select {
+  border-color: #334155;
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+html.dark .authenticated-theme input::placeholder,
+html.dark .authenticated-theme textarea::placeholder {
+  color: #94a3b8;
 }
