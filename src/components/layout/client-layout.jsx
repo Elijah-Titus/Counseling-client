@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { CalendarDays, CalendarPlus } from "lucide-react";
+import { CalendarDays, CalendarPlus, MessageCircle } from "lucide-react";
 import PortalSidebar from "./portal-sidebar";
 import PortalHeader from "./portal-header";
+import useUnreadMessages from "../../hooks/use-unread-messages";
 import { logout } from "../../api/auth";
 import { getStoredUser } from "../../utils/token";
-
-const navItems = [
-  { label: "My appointments", to: "/dashboard/appointments", icon: CalendarDays },
-  { label: "Book a session", to: "/dashboard/book", icon: CalendarPlus },
-];
 
 export default function ClientLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const unread = useUnreadMessages();
+
+  const navItems = [
+    { label: "My appointments", to: "/dashboard/appointments", icon: CalendarDays },
+    { label: "Messages", to: "/dashboard/messages", icon: MessageCircle, badge: unread },
+    { label: "Book a session", to: "/dashboard/book", icon: CalendarPlus },
+  ];
 
   const user = getStoredUser();
   const title = navItems.find((item) => pathname.startsWith(item.to))?.label || "Dashboard";

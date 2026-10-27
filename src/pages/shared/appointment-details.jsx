@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { canRecordOutcome, getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
 import JoinSession from "../../features/appointments/join-session";
 import { getStoredUser } from "../../utils/token";
+import ChatPanel from "../../features/chat/chat-panel";
 import {
   AlertCircle,
   ArrowLeft,
@@ -219,6 +220,12 @@ export default function AppointmentDetails() {
           {a.description}
         </p>
       </section>
+
+      <ChatPanel
+        appointmentId={a.id}
+        otherName={isCounselor ? a.client?.name : a.counselor?.name}
+        refreshKey={reloadKey}
+      />
 
       {!isCounselor && <JoinSession appointment={a} />}
 

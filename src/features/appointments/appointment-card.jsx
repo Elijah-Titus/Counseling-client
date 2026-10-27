@@ -10,12 +10,6 @@ import {
   getLagosDateParts,
 } from "../../utils/lagos-time";
 
-const statusInfo = {
-  AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
-  COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
-  CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
-};
-
 export default function AppointmentCard({ appointment, onCancel }) {
   const [expanded, setExpanded] = useState(false);
   const a = appointment;
@@ -38,13 +32,21 @@ export default function AppointmentCard({ appointment, onCancel }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-bold text-blue-950">
-            <Link to={`/dashboard/appointments/${a.id}`} className="transition hover:text-indigo-600 hover:underline">
-              {a.topic}
-            </Link>
-          </h3>
+              <Link
+                to={`/dashboard/appointments/${a.id}`}
+                className="transition hover:text-indigo-600 hover:underline"
+              >
+                {a.topic}
+              </Link>
+            </h3>
             <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${badge.style}`}>
               {badge.label}
             </span>
+            {a.unreadMessages > 0 && (
+              <span className="rounded-full bg-rose-500 px-2.5 py-0.5 text-xs font-semibold text-white">
+                {a.unreadMessages} new {a.unreadMessages === 1 ? "message" : "messages"}
+              </span>
+            )}
           </div>
 
           <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
@@ -68,7 +70,7 @@ export default function AppointmentCard({ appointment, onCancel }) {
         </div>
       )}
 
-            {a.abandoned && (
+      {a.abandoned && (
         <div className="mt-3 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
           You didn't attend this session. You can book a new one at any time.
         </div>

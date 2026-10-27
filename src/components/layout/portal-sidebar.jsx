@@ -27,7 +27,7 @@ export default function PortalSidebar({ items, user, roleLabel, open, onClose, o
         </div>
 
         <nav className="mt-8 flex flex-1 flex-col gap-1">
-          {items.map(({ label, to, icon: Icon }) => (
+          {items.map(({ label, to, icon: Icon, badge }) => (
             <NavLink
               key={to}
               to={to}
@@ -42,6 +42,11 @@ export default function PortalSidebar({ items, user, roleLabel, open, onClose, o
             >
               <Icon size={18} />
               {label}
+              {badge > 0 && (
+                <span className="ml-auto rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                  {badge > 99 ? "99+" : badge}
+                </span>
+              )}
             </NavLink>
           ))}
         </nav>

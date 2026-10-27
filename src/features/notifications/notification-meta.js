@@ -44,6 +44,7 @@ export const inboxPath = (role) => `${homeByRole[role] || "/dashboard"}/notifica
 
 // Where a notification should take the person.
 // Leave notifications carry no leave id, so they go to the leave list.
+// New messages open that conversation.
 // Admins have no appointment details page, so they go to the appointments list.
 export const notificationLink = (n, role) => {
   const home = homeByRole[role] || "/dashboard";
@@ -52,6 +53,9 @@ export const notificationLink = (n, role) => {
     return role === "ADMIN" ? "/admin/leave" : "/counselor/leave";
   }
   if (!n.appointmentId) return null;
+  if (n.type === "NEW_MESSAGE" && role !== "ADMIN") {
+    return `${home}/messages?appointment=${n.appointmentId}`;
+  }
   if (role === "ADMIN") return "/admin/appointments";
   return `${home}/appointments/${n.appointmentId}`;
 };

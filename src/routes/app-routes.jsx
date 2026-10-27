@@ -23,6 +23,7 @@ import CounselorLeave from "../pages/counselor/counselor-leave";
 import LeaveRequests from "../pages/admin/leave-requests";
 import LeaveDetails from "../pages/admin/leave-details";
 import Notifications from "../pages/shared/notifications";
+import Messages from "../pages/shared/messages";
 
 export default function AppRoutes() {
   return (
@@ -50,6 +51,7 @@ export default function AppRoutes() {
         <Route index element={<Navigate to="/dashboard/appointments" replace />} />
         <Route path="appointments" element={<MyAppointments />} />
         <Route path="appointments/:id" element={<AppointmentDetails />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="book" element={<BookAppointment />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
@@ -66,6 +68,7 @@ export default function AppRoutes() {
         <Route index element={<Navigate to="/counselor/appointments" replace />} />
         <Route path="appointments" element={<CounselorAppointments />} />
         <Route path="appointments/:id" element={<AppointmentDetails />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="leave" element={<CounselorLeave />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>

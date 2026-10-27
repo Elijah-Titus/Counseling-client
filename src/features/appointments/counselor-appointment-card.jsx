@@ -70,6 +70,11 @@ export default function CounselorAppointmentCard({
             <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${badge.style}`}>
               {badge.label}
             </span>
+            {a.unreadMessages > 0 && (
+              <span className="rounded-full bg-rose-500 px-2.5 py-0.5 text-xs font-semibold text-white">
+                {a.unreadMessages} new {a.unreadMessages === 1 ? "message" : "messages"}
+              </span>
+            )}
           </div>
 
           <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
