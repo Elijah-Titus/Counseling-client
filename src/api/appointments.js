@@ -1,4 +1,5 @@
 import api from "./axios";
+import { normalizePage } from "./paging";
 
 export const getAvailability = async ({ date, hours = 1 }) => {
   const res = await api.get("/appointments/availability", { params: { date, hours } });
@@ -10,9 +11,11 @@ export const bookAppointment = async ({ startAt, hours, topic, description }) =>
   return res.data.data; // the new appointment, with the assigned counselor
 };
 
+
+
 export const getAppointments = async ({ scope = "upcoming", page = 1, limit = 10 } = {}) => {
   const res = await api.get("/appointments", { params: { scope, page, limit } });
-  return res.data.data; // { items, total, page, limit }
+  return normalizePage(res.data.data, page, limit); // { items, total }
 };
 
 export const cancelAppointment = async (id) => {
@@ -28,4 +31,9 @@ export const rescheduleAppointment = async (id, startAt) => {
 export const getAppointment = async (id) => {
   const res = await api.get(`/appointments/${id}`);
   return res.data.data; // one appointment (counselors also get notes)
+};
+
+export const setMeetLink = async (id, meetLink) => {
+  const res = await api.patch(`/appointments/${id}/meet-link`, { meetLink });
+  return res.data.data;
 };

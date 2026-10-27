@@ -23,9 +23,8 @@ export default function LeaveCard({ leave, onCancel }) {
     : `${formatLagosDateShort(l.startAt)}, ${formatLagosTime(l.startAt)} → ${formatLagosDateShort(l.endAt)}, ${formatLagosTime(l.endAt)}`;
 
   // A pending request can always be withdrawn; approved leave only before it starts
-  const canCancel =
-    l.status === "PENDING" ||
-    (l.status === "APPROVED" && Date.now() < new Date(l.startAt).getTime());
+    const canCancel = l.status === "PENDING";
+    const approvedAndUpcoming = l.status === "APPROVED" && Date.now() < new Date(l.startAt).getTime();
 
   return (
     <li className="rounded-2xl bg-white/80 p-4 sm:p-5">
@@ -46,6 +45,11 @@ export default function LeaveCard({ leave, onCancel }) {
           <p className="mt-1 text-xs text-slate-400">
             Requested on {formatLagosDate(l.createdAt)} · Lagos time
           </p>
+           {approvedAndUpcoming && (
+          <p className="mt-1 text-xs text-slate-400">
+            Approved leave can't be cancelled here.
+          </p>
+        )}
         </div>
 
         {canCancel && (

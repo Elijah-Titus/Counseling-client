@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { getAppointmentBadge } from "../../utils/appointment-status";
 import {
   AlertCircle,
   ArrowLeft,
@@ -316,7 +317,7 @@ export default function CounselorDetails() {
           ) : (
             <ul className="space-y-2">
               {recent.map((a) => {
-                const badge = statusBadge(a);
+                const badge = getAppointmentBadge(a, "ADMIN");
                 return (
                   <li
                     key={a.id}

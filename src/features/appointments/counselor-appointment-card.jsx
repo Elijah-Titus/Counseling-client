@@ -1,30 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, Clock, History, Lock, User } from "lucide-react";
+import { ChevronDown, Clock, History, Lock, User, Video } from "lucide-react";
+import { getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
+import MeetLinkForm from "../../features/appointments/meet-link-form";
+import { normalizeMeetLink } from "../../utils/meet-link";
 import {
   formatLagosDate,
   formatLagosTime,
   getLagosDateParts,
 } from "../../utils/lagos-time";
 
-const statusInfo = {
-  AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
-  COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
-  CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
-};
+// const statusInfo = {
+//   AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
+//   COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
+//   CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
+// };
 
-export default function CounselorAppointmentCard({ appointment, onReschedule }) {
+export default function CounselorAppointmentCard({
+  appointment,
+  onReschedule,
+  allAppointments = [],
+}) {
   const [expanded, setExpanded] = useState(false);
   const a = appointment;
+  const [linkAdded, setLinkAdded] = useState(Boolean(a.meetLink));
+
+  // Returns a message if another upcoming session already uses this link
+  const getLinkConflict = (link) => {
+    const key = normalizeMeetLink(link);
+    if (!key) return "";
+    const other = allAppointments.find(
+      (o) => o.id !== a.id && isUpcoming(o) && normalizeMeetLink(o.meetLink) === key
+    );
+    return other
+      ? `This link is already used for ${other.client?.name}'s session on ${formatLagosDate(other.startAt)} at ${formatLagosTime(other.startAt)}.`
+      : "";
+  };
+  const hasDuplicateLink = Boolean(a.meetLink) && Boolean(getLinkConflict(a.meetLink));
+
+  // Stay in sync when the list reloads (e.g. after a reschedule clears the link)
+  useEffect(() => {
+    setLinkAdded(Boolean(a.meetLink));
+  }, [a.meetLink]);
 
   const { day, month, weekday } = getLagosDateParts(a.startAt);
   const hours = Math.round((new Date(a.endAt) - new Date(a.startAt)) / 3600000);
 
-  const badge = a.abandoned
-    ? { label: "Client didn't attend", style: "bg-amber-100 text-amber-700" }
-    : statusInfo[a.status] || statusInfo.AWAITING;
-
-  const isScheduled = a.status === "AWAITING" && !a.abandoned;
+   const badge = getAppointmentBadge(a, "COUNSELOR");
+   const isScheduled = isUpcoming(a);
   const alreadyMoved = Boolean(a.originalStartAt);
   const notStarted = Date.now() < new Date(a.startAt).getTime();
   const canReschedule = isScheduled && !alreadyMoved && notStarted;
@@ -61,6 +84,21 @@ export default function CounselorAppointmentCard({ appointment, onReschedule }) 
             {hours === 1 ? "hour" : "hours"} · Lagos time
           </p>
         </div>
+
+        {isScheduled && (
+          <span
+            className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
+              hasDuplicateLink
+                ? "bg-red-100 text-red-700"
+                : linkAdded
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-amber-100 text-amber-700"
+            }`}
+          >
+            <Video size={12} />
+            {hasDuplicateLink ? "Link already used" : linkAdded ? "Link added" : "No link yet"}
+          </span>
+        )}
       </div>
 
       {alreadyMoved && (
@@ -73,25 +111,24 @@ export default function CounselorAppointmentCard({ appointment, onReschedule }) 
         </div>
       )}
 
-      {expanded && (
-        <div className="mt-3 space-y-3">
-          <div className="rounded-xl bg-indigo-50/60 p-3">
+        {expanded && (
+          <div className="mt-3 rounded-xl bg-indigo-50/60 p-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Message from {a.client?.name}
             </p>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">{a.description}</p>
           </div>
+        )}
 
-          <div className="rounded-xl bg-violet-50/70 p-3">
-            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              <Lock size={12} /> Private notes
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              {a.notes || "No notes for this session yet."}
-            </p>
+        {expanded && isScheduled && (
+          <div className="mt-3">
+          <MeetLinkForm
+            appointment={a}
+            getConflict={getLinkConflict}
+            onSaved={(updated) => setLinkAdded(Boolean(updated.meetLink))}
+          />
           </div>
-        </div>
-      )}
+        )}
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <button

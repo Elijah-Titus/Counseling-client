@@ -44,6 +44,7 @@ export default function LoginForm() {
         { email: form.email.trim().toLowerCase(), password: form.password },
         { blockedRoles: [ROLES.ADMIN] }
       );
+      console.log(user);
       navigate(getHomePath(user.role), { replace: true });
     } catch (err) {
       setServerError(

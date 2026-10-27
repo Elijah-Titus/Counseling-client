@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   CalendarX,
   CheckCircle2,
+  FileText,
   Loader2,
   RefreshCw,
   UserX,
@@ -20,12 +21,13 @@ import { useSearchParams } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
-const stats = [
-  { view: "upcoming", label: "Upcoming", icon: CalendarCheck, tone: "bg-indigo-100 text-indigo-600" },
-  { view: "missed", label: "Missed", icon: UserX, tone: "bg-amber-100 text-amber-600" },
-  { view: "completed", label: "Completed", icon: CheckCircle2, tone: "bg-emerald-100 text-emerald-600" },
-  { view: "cancelled", label: "Cancelled", icon: CalendarX, tone: "bg-slate-200 text-slate-600" },
-];
+   const stats = [
+     { view: "upcoming", label: "Upcoming", icon: CalendarCheck, tone: "bg-indigo-100 text-indigo-600" },
+     { view: "awaitingReport", label: "Awaiting report", icon: FileText, tone: "bg-violet-100 text-violet-600" },
+     { view: "completed", label: "Completed", icon: CheckCircle2, tone: "bg-emerald-100 text-emerald-600" },
+     { view: "missed", label: "Missed", icon: UserX, tone: "bg-amber-100 text-amber-600" },
+     { view: "cancelled", label: "Cancelled", icon: CalendarX, tone: "bg-slate-200 text-slate-600" },
+   ];
 
 const viewLabels = Object.fromEntries(stats.map((s) => [s.view, s.label]));
 

@@ -369,9 +369,9 @@ export default function LeaveDetails() {
         open={approveOpen}
         title="Approve this leave?"
         message={
-          affected > 0
-            ? `${leave.counselor?.name} will be unavailable for this period, and ${affected} ${affected === 1 ? "appointment" : "appointments"} will be given to other counselors. They won't return to ${leave.counselor?.name}, even if the leave is cancelled later.`
-            : `${leave.counselor?.name} will be unavailable for this period. No appointments need to be moved.`
+        affected > 0
+          ? `${leave.counselor?.name} will be unavailable for this period, and ${affected} ${affected === 1 ? "appointment" : "appointments"} will be given to other counselors. They won't return to ${leave.counselor?.name}.`
+          : `${leave.counselor?.name} will be unavailable for this period. No appointments need to be moved.`
         }
         confirmLabel="Approve leave"
         loading={acting}

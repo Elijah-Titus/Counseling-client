@@ -137,6 +137,7 @@ export default function CounselorAppointments() {
             <ul className={`space-y-3 transition-opacity ${loading ? "opacity-60" : ""}`}>
               {items.map((appointment) => (
                 <CounselorAppointmentCard
+                  allAppointments={items}
                   key={appointment.id}
                   appointment={appointment}
                   onReschedule={setTarget}

@@ -1,11 +1,12 @@
 import api from "./axios";
+import { normalizePage } from "./paging";
 
 export const getCounselors = async ({ search = "", page = 1, limit = 20 } = {}) => {
   const params = { page, limit };
   if (search) params.search = search;
 
   const res = await api.get("/admin/counselors", { params });
-  return res.data.data; // { items, total }
+  return normalizePage(res.data.data, page, limit); // { items, total }
 };
 
 export const createCounselor = async ({ name, email, password }) => {
@@ -26,9 +27,10 @@ export const resetCounselorPassword = async (id) => {
 };
 
 const viewFilters = {
-  upcoming: { status: "AWAITING", abandoned: false },
-  missed: { abandoned: true },
+  upcoming: { status: "AWAITING", awaitingReport: false },
+  awaitingReport: { status: "AWAITING", awaitingReport: true },
   completed: { status: "COMPLETED" },
+  missed: { status: "NO_SHOW" },
   cancelled: { status: "CANCELLED" },
 };
 
@@ -48,20 +50,21 @@ export const getAllAppointments = async ({
   if (to) params.to = to;
 
   const res = await api.get("/admin/appointments", { params });
-  return res.data.data; // { items, total, page, limit }
+  return normalizePage(res.data.data, page, limit); // { items, total }
 };
 
 export const getAppointmentCounts = async () => {
   const count = async (view) => (await getAllAppointments({ view, page: 1, limit: 1 })).total;
 
-  const [upcoming, missed, completed, cancelled] = await Promise.all([
+  const [upcoming, awaitingReport, completed, missed, cancelled] = await Promise.all([
     count("upcoming"),
-    count("missed"),
+    count("awaitingReport"),
     count("completed"),
+    count("missed"),
     count("cancelled"),
   ]);
 
-  return { upcoming, missed, completed, cancelled };
+  return { upcoming, awaitingReport, completed, missed, cancelled };
 };
 
 export const getCounselor = async (id) => {
@@ -75,7 +78,7 @@ export const getAdminLeaves = async ({ status = "", counselorId, page = 1, limit
   if (counselorId) params.counselorId = counselorId;
 
   const res = await api.get("/admin/leaves", { params });
-  return res.data.data; // { items, total, page, limit }
+  return normalizePage(res.data.data, page, limit); // { items, total }
 };
 
 export const getAdminLeave = async (id) => {

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ChevronDown, Clock, History, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
+import JoinSession from "../../features/appointments/join-session";
 import {
   canStillCancel,
   formatLagosDate,
@@ -21,11 +23,8 @@ export default function AppointmentCard({ appointment, onCancel }) {
   const { day, month, weekday } = getLagosDateParts(a.startAt);
   const hours = Math.round((new Date(a.endAt) - new Date(a.startAt)) / 3600000);
 
-  const badge = a.abandoned
-    ? { label: "Missed", style: "bg-amber-100 text-amber-700" }
-    : statusInfo[a.status] || statusInfo.AWAITING;
-
-  const isScheduled = a.status === "AWAITING" && !a.abandoned;
+  const badge = getAppointmentBadge(a, "CLIENT");
+  const isScheduled = isUpcoming(a);
   const cancellable = isScheduled && canStillCancel(a.startAt);
 
   return (
@@ -79,6 +78,12 @@ export default function AppointmentCard({ appointment, onCancel }) {
         <p className="mt-3 rounded-xl bg-indigo-50/60 p-3 text-sm leading-relaxed text-slate-600">
           {a.description}
         </p>
+      )}
+
+      {a.meetLink && (
+        <div className="mt-3">
+          <JoinSession appointment={a} />
+        </div>
       )}
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">

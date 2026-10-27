@@ -114,7 +114,6 @@ export default function CounselorLeave() {
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const initialLoad = loading && items.length === 0;
-  const cancellingApproved = cancelTarget?.status === "APPROVED";
 
   return (
     <div className="space-y-5">
@@ -209,15 +208,13 @@ export default function CounselorLeave() {
 
       <ConfirmDialog
         open={!!cancelTarget}
-        title={cancellingApproved ? "Cancel approved leave?" : "Withdraw this request?"}
+        title="Withdraw this request?"
         message={
           cancelTarget
-            ? cancellingApproved
-              ? `Your approved leave from ${formatLagosDateShort(cancelTarget.startAt)}, ${formatLagosTime(cancelTarget.startAt)} will be cancelled. Appointments that were already given to other counselors will not come back to you.`
-              : `Your leave request for ${formatLagosDateShort(cancelTarget.startAt)}, ${formatLagosTime(cancelTarget.startAt)} will be withdrawn.`
+            ? `Your leave request for ${formatLagosDateShort(cancelTarget.startAt)}, ${formatLagosTime(cancelTarget.startAt)} will be withdrawn.`
             : ""
         }
-        confirmLabel={cancellingApproved ? "Cancel leave" : "Withdraw request"}
+        confirmLabel="Withdraw request"
         danger
         loading={cancelling}
         onConfirm={handleCancel}

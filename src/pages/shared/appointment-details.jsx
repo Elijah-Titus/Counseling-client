@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { getAppointmentBadge, isUpcoming } from "../../utils/appointment-status";
+import MeetLinkForm from "../../features/appointments/meet-link-form";
+import JoinSession from "../../features/appointments/join-session";
+import { getStoredUser } from "../../utils/token";
 import {
   AlertCircle,
   ArrowLeft,
@@ -7,7 +11,6 @@ import {
   Clock,
   History,
   Loader2,
-  Lock,
 } from "lucide-react";
 import Button from "../../components/ui/button";
 import ConfirmDialog from "../../components/common/confirm-dialog";
@@ -15,14 +18,8 @@ import RescheduleModal from "../../features/appointments/reschedule-modal";
 import { cancelAppointment, getAppointment } from "../../api/appointments";
 import { getErrorMessage } from "../../api/axios";
 import { canStillCancel, formatLagosDate, formatLagosTime } from "../../utils/lagos-time";
-import { getStoredUser } from "../../utils/token";
 import { ROLES } from "../../utils/roles";
 
-const statusInfo = {
-  AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
-  COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
-  CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
-};
 
 function Row({ label, children }) {
   return (
@@ -146,14 +143,9 @@ export default function AppointmentDetails() {
   const a = appointment;
   const hours = Math.round((new Date(a.endAt) - new Date(a.startAt)) / 3600000);
 
-  const badge = a.abandoned
-    ? {
-        label: isCounselor ? "Client didn't attend" : "Missed",
-        style: "bg-amber-100 text-amber-700",
-      }
-    : statusInfo[a.status] || statusInfo.AWAITING;
+   const badge = getAppointmentBadge(a, isCounselor ? "COUNSELOR" : "CLIENT");
 
-  const isScheduled = a.status === "AWAITING" && !a.abandoned;
+  const isScheduled = isUpcoming(a);
   const canCancel = !isCounselor && isScheduled && canStillCancel(a.startAt);
   const canReschedule =
     isCounselor && isScheduled && !a.originalStartAt && Date.now() < new Date(a.startAt).getTime();
@@ -208,10 +200,10 @@ export default function AppointmentDetails() {
           </div>
         )}
 
-        {a.abandoned && (
+        {a.status === "NO_SHOW" && (
           <div className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
             {isCounselor
-              ? "The session ended without the client attending."
+              ? "The client did not attend this session."
               : "You didn't attend this session. You can book a new one at any time."}
           </div>
         )}
@@ -225,6 +217,8 @@ export default function AppointmentDetails() {
           {a.description}
         </p>
       </section>
+
+      {!isCounselor && <JoinSession appointment={a} />}
 
       {isCounselor && (
         <section className="rounded-3xl bg-violet-50/70 p-6 shadow-sm sm:p-8">

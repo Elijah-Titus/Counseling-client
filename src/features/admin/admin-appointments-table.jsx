@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { ChevronDown, Lock } from "lucide-react";
 import { formatLagosDate, formatLagosTime, getLagosDateParts } from "../../utils/lagos-time";
+import { getAppointmentBadge } from "../../utils/appointment-status";
 
 const statusInfo = {
   AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
@@ -35,9 +36,7 @@ export default function AdminAppointmentsTable({
         <tbody>
           {appointments.map((a) => {
             const { day, month, weekday } = getLagosDateParts(a.startAt);
-            const badge = a.abandoned
-              ? { label: "Missed", style: "bg-amber-100 text-amber-700" }
-              : statusInfo[a.status] || statusInfo.AWAITING;
+            const badge = getAppointmentBadge(a, "ADMIN");
             const open = openId === a.id;
 
             return (
@@ -99,38 +98,24 @@ export default function AdminAppointmentsTable({
                 {open && (
                   <tr className="border-b border-indigo-50 bg-indigo-50/40">
                     <td colSpan={6} className="px-4 py-4">
-                      <div className="grid gap-4 md:grid-cols-3">
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            Message from client
-                          </p>
-                          <p className="mt-1 text-sm leading-relaxed text-slate-600">
-                            {a.description}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <Lock size={12} /> Private notes
-                          </p>
-                          <p className="mt-1 text-sm leading-relaxed text-slate-600">
-                            {a.notes || "No notes for this session."}
-                          </p>
-                        </div>
-
-                        <div className="space-y-1 text-sm text-slate-600">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            History
-                          </p>
-                          <p>Booked on {formatLagosDate(a.createdAt)}</p>
-                          {a.originalStartAt && (
-                            <p>
-                              Originally {formatLagosDate(a.originalStartAt)} at{" "}
-                              {formatLagosTime(a.originalStartAt)}
-                            </p>
-                          )}
-                        </div>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          Message from client
+                        </p>
+                        <p className="mt-1 text-sm leading-relaxed text-slate-600">{a.description}</p>
                       </div>
+
+                      <div className="space-y-1 text-sm text-slate-600">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">History</p>
+                        <p>Booked on {formatLagosDate(a.createdAt)}</p>
+                        {a.originalStartAt && (
+                          <p>
+                            Originally {formatLagosDate(a.originalStartAt)} at {formatLagosTime(a.originalStartAt)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                     </td>
                   </tr>
                 )}
