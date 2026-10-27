@@ -93,3 +93,22 @@ export const decideLeave = async (id, { status, note }) => {
   const res = await api.patch(`/admin/leaves/${id}/decision`, body);
   return res.data.data; // the leave, plus reassigned when approved
 };
+
+export const getClients = async ({ search = "", page = 1, limit = 10 } = {}) => {
+  const params = { page, limit };
+  if (search) params.search = search;
+
+  const res = await api.get("/admin/clients", { params });
+  return normalizePage(res.data.data, page, limit); // { items, total }
+};
+
+export const getClient = async (id) => {
+  const res = await api.get(`/admin/clients/${id}`);
+  return res.data.data; // the client (a non-client id returns 404)
+};
+
+// Audit trail, oldest first, no paging.
+export const getAppointmentHistory = async (appointmentId) => {
+  const res = await api.get(`/appointments/${appointmentId}/history`);
+  return res.data.data; // { appointmentId, status, events }
+};

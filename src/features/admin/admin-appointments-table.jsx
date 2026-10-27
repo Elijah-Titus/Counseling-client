@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { formatLagosDate, formatLagosTime, getLagosDateParts } from "../../utils/lagos-time";
 import { getAppointmentBadge } from "../../utils/appointment-status";
+import HistoryPanel from "../../features/admin/history-panel";
 import ReportPanel from "../reports/report-panel";
 
 const nameButton =
@@ -119,6 +120,9 @@ export default function AdminAppointmentsTable({
 
                       <div className="mt-4">
                         <ReportPanel appointmentId={a.id} status={a.status} compact />
+                      </div>
+                      <div className="mt-4">
+                        <HistoryPanel appointmentId={a.id} />
                       </div>
                     </td>
                   </tr>

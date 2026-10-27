@@ -17,6 +17,8 @@ import ChangePassword from "../pages/account/change-password";
 import AdminLogin from "../pages/admin/admin-login";
 import Counselors from "../pages/admin/counselors";
 import CounselorDetails from "../pages/admin/counselor-details";
+import Clients from "../pages/admin/clients";
+import ClientDetails from "../pages/admin/client-details";
 import AdminAppointments from "../pages/admin/appointments";
 import { ROLES } from "../utils/roles";
 import CounselorLeave from "../pages/counselor/counselor-leave";
@@ -96,6 +98,8 @@ export default function AppRoutes() {
         <Route index element={<Navigate to="/admin/counselors" replace />} />
         <Route path="counselors" element={<Counselors />} />
         <Route path="counselors/:id" element={<CounselorDetails />} />
+        <Route path="clients" element={<Clients />} />
+        <Route path="clients/:id" element={<ClientDetails />} />
         <Route path="appointments" element={<AdminAppointments />} />
         <Route path="leave" element={<LeaveRequests />} />
         <Route path="leave/:id" element={<LeaveDetails />} />
