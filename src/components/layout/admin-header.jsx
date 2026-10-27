@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, MoonStar, SunMedium } from "lucide-react";
+import NotificationBell from "../../features/notifications/notification-bell";
 
 const THEME_KEY = "counseling-theme";
 
@@ -62,59 +63,63 @@ export default function AdminHeader({ title, user, onMenuClick }) {
           </h1>
         </div>
 
-        <div ref={menuRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className={`flex items-center gap-2 rounded-full border px-2 py-1.5 transition ${
-              isDark
-                ? "border-slate-700 bg-slate-800/80 text-slate-100 hover:bg-slate-700"
-                : "border-slate-200 bg-white/80 text-blue-950 hover:bg-slate-50"
-            }`}
-          >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 font-bold text-white">
-              {initial}
-            </div>
-            <span className="hidden text-sm font-semibold sm:block">{user?.name}</span>
-            <ChevronDown size={16} className={menuOpen ? "rotate-180 transition-transform" : "transition-transform"} />
-          </button>
+        <div className="flex items-center gap-3">
+          <NotificationBell dark={isDark} />
 
-          {menuOpen && (
-            <div
-              className={`absolute right-0 top-full mt-2 w-40 overflow-hidden rounded-xl border shadow-lg ${
+          <div ref={menuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              className={`flex items-center gap-2 rounded-full border px-2 py-1.5 transition ${
                 isDark
-                  ? "border-slate-700 bg-slate-800 text-slate-100"
-                  : "border-slate-200 bg-white text-slate-700"
+                  ? "border-slate-700 bg-slate-800/80 text-slate-100 hover:bg-slate-700"
+                  : "border-slate-200 bg-white/80 text-blue-950 hover:bg-slate-50"
               }`}
             >
-              <div className={`px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                Theme
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 font-bold text-white">
+                {initial}
               </div>
+              <span className="hidden text-sm font-semibold sm:block">{user?.name}</span>
+              <ChevronDown size={16} className={menuOpen ? "rotate-180 transition-transform" : "transition-transform"} />
+            </button>
 
-              {themeOptions.map(({ value, label, Icon }) => {
-                const selected = theme === value;
+            {menuOpen && (
+              <div
+                className={`absolute right-0 top-full mt-2 w-40 overflow-hidden rounded-xl border shadow-lg ${
+                  isDark
+                    ? "border-slate-700 bg-slate-800 text-slate-100"
+                    : "border-slate-200 bg-white text-slate-700"
+                }`}
+              >
+                <div className={`px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                  Theme
+                </div>
 
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => {
-                      setTheme(value);
-                      setMenuOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-sm transition ${
-                      selected ? (isDark ? "bg-slate-700 text-white" : "bg-indigo-50 text-indigo-700") : isDark ? "hover:bg-slate-700" : "hover:bg-slate-50"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <Icon size={16} />
-                      {label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                {themeOptions.map(({ value, label, Icon }) => {
+                  const selected = theme === value;
+
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        setTheme(value);
+                        setMenuOpen(false);
+                      }}
+                      className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-sm transition ${
+                        selected ? (isDark ? "bg-slate-700 text-white" : "bg-indigo-50 text-indigo-700") : isDark ? "hover:bg-slate-700" : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon size={16} />
+                        {label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

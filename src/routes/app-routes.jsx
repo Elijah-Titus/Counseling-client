@@ -22,6 +22,7 @@ import { ROLES } from "../utils/roles";
 import CounselorLeave from "../pages/counselor/counselor-leave";
 import LeaveRequests from "../pages/admin/leave-requests";
 import LeaveDetails from "../pages/admin/leave-details";
+import Notifications from "../pages/shared/notifications";
 
 export default function AppRoutes() {
   return (
@@ -50,6 +51,7 @@ export default function AppRoutes() {
         <Route path="appointments" element={<MyAppointments />} />
         <Route path="appointments/:id" element={<AppointmentDetails />} />
         <Route path="book" element={<BookAppointment />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       {/* Counselor area */}
@@ -65,6 +67,7 @@ export default function AppRoutes() {
         <Route path="appointments" element={<CounselorAppointments />} />
         <Route path="appointments/:id" element={<AppointmentDetails />} />
         <Route path="leave" element={<CounselorLeave />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       {/* Any signed-in role */}
@@ -93,6 +96,7 @@ export default function AppRoutes() {
         <Route path="appointments" element={<AdminAppointments />} />
         <Route path="leave" element={<LeaveRequests />} />
         <Route path="leave/:id" element={<LeaveDetails />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
     </Routes>
   );
