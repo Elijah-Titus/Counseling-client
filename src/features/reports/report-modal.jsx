@@ -120,6 +120,8 @@ export default function ReportModal({ appointment, onClose, onSaved }) {
       open
       title={editing ? "Edit session outcome" : "Record session outcome"}
       onClose={saving ? () => {} : onClose}
+      scrollable
+      className="max-w-2xl p-4 sm:p-5"
     >
       <p className="text-sm text-slate-600">
         <span className="font-semibold text-blue-950">{appointment.topic}</span> with{" "}
@@ -131,7 +133,7 @@ export default function ReportModal({ appointment, onClose, onSaved }) {
         </span>
       </p>
 
-      <div className="mt-4 flex items-start gap-2 rounded-xl bg-indigo-50 p-3 text-xs leading-relaxed text-indigo-800">
+      <div className="mt-3 flex items-start gap-2 rounded-xl bg-indigo-50 p-2.5 text-xs leading-relaxed text-indigo-800">
         <Info size={15} className="mt-0.5 shrink-0" />
         <p>
           Clients never see reports. Only you and administrators can. Saving closes this
@@ -144,7 +146,7 @@ export default function ReportModal({ appointment, onClose, onSaved }) {
           <Loader2 size={18} className="animate-spin" /> Loading...
         </div>
       ) : (
-        <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-3">
           {serverError && (
             <div
               role="alert"
@@ -181,7 +183,7 @@ export default function ReportModal({ appointment, onClose, onSaved }) {
           <Textarea
             id="report-summary"
             label={outcome === "COMPLETED" ? "Summary" : "Note (optional)"}
-            rows={outcome === "COMPLETED" ? 5 : 3}
+            rows={outcome === "COMPLETED" ? 3 : 2}
             maxLength={5000}
             placeholder={
               outcome === "COMPLETED"
@@ -201,7 +203,7 @@ export default function ReportModal({ appointment, onClose, onSaved }) {
               <Textarea
                 id="report-recommendation"
                 label="Recommendation (optional)"
-                rows={3}
+                rows={2}
                 maxLength={2000}
                 placeholder="For example: Weekly follow-up sessions"
                 value={recommendation}
@@ -226,7 +228,7 @@ export default function ReportModal({ appointment, onClose, onSaved }) {
                 <p className="mb-1.5 text-sm font-semibold text-blue-950">
                   Actual session time (optional)
                 </p>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-2 sm:grid-cols-2">
                   <Input
                     id="report-start"
                     type="time"
