@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { CalendarDays, CalendarPlus, CalendarOff, MessageCircle } from "lucide-react";
 import PortalSidebar from "./portal-sidebar";
 import PortalHeader from "./portal-header";
+import ConfirmDialog from "../common/confirm-dialog";
 import { logout } from "../../api/auth";
 import { getStoredUser } from "../../utils/token";
 import useUnreadMessages from "../../hooks/use-unread-messages";
@@ -11,6 +12,8 @@ export default function CounselorLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
   const unread = useUnreadMessages();
 
   const navItems = [
@@ -27,8 +30,14 @@ export default function CounselorLayout() {
       .sort((a, b) => b.to.length - a.to.length)[0]?.label || "Counselor";
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login", { replace: true });
+    setLogoutLoading(true);
+    try {
+      await logout();
+      navigate("/login", { replace: true });
+    } finally {
+      setLogoutLoading(false);
+      setLogoutDialogOpen(false);
+    }
   };
 
   return (
@@ -39,7 +48,7 @@ export default function CounselorLayout() {
         roleLabel="Counselor"
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        onLogout={handleLogout}
+        onLogout={() => setLogoutDialogOpen(true)}
       />
 
       <div className="lg:pl-64">
@@ -48,6 +57,17 @@ export default function CounselorLayout() {
           <Outlet />
         </main>
       </div>
+
+      <ConfirmDialog
+        open={logoutDialogOpen}
+        title="Sign out?"
+        message="Are you sure you want to sign out of your account?"
+        confirmLabel="Sign out"
+        danger
+        loading={logoutLoading}
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutDialogOpen(false)}
+      />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
 import Button from "../../components/ui/button";
 import ConfirmDialog from "../../components/common/confirm-dialog";
 import RescheduleModal from "../../features/appointments/reschedule-modal";
+import FollowUpModal from "../../features/appointments/follow-up-modal";
 import ReportModal from "../../features/reports/report-modal";
 import ReportPanel from "../../features/reports/report-panel";
 import { cancelAppointment, getAppointment } from "../../api/appointments";
@@ -47,6 +48,7 @@ export default function AppointmentDetails() {
   const [cancelling, setCancelling] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [outcomeOpen, setOutcomeOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
 
   const reload = () => setReloadKey((key) => key + 1);
 
@@ -235,6 +237,7 @@ export default function AppointmentDetails() {
           status={a.status}
           refreshKey={reloadKey}
           onEdit={canRecord ? () => setOutcomeOpen(true) : undefined}
+          onFollowUp={() => setFollowUpOpen(true)}
         />
       )}
 
@@ -308,6 +311,14 @@ export default function AppointmentDetails() {
             );
             reload();
           }}
+        />
+      )}
+
+      {followUpOpen && (
+        <FollowUpModal
+          key={a.id}
+          appointment={a}
+          onClose={() => setFollowUpOpen(false)}
         />
       )}
     </div>

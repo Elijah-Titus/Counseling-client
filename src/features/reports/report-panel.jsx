@@ -4,7 +4,14 @@ import { getReport } from "../../api/reports";
 import { getErrorMessage } from "../../api/axios";
 import { formatLagosDate, formatLagosTime } from "../../utils/lagos-time";
 
-export default function ReportPanel({ appointmentId, status, refreshKey = 0, onEdit, compact }) {
+export default function ReportPanel({
+  appointmentId,
+  status,
+  refreshKey = 0,
+  onEdit,
+  onFollowUp,
+  compact,
+}) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -89,6 +96,14 @@ export default function ReportPanel({ appointmentId, status, refreshKey = 0, onE
                 <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
                   Follow-up recommended
                 </span>
+              )}
+              {onFollowUp && status === "COMPLETED" && report.needsFollowUp && (
+                <button
+                  onClick={onFollowUp}
+                  className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-700"
+                >
+                  Schedule follow-up
+                </button>
               )}
               {report.actualStartAt && report.actualEndAt && (
                 <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-slate-600">

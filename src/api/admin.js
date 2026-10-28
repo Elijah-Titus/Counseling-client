@@ -112,3 +112,8 @@ export const getAppointmentHistory = async (appointmentId) => {
   const res = await api.get(`/appointments/${appointmentId}/history`);
   return res.data.data; // { appointmentId, status, events }
 };
+
+export const reassignAppointment = async (appointmentId, counselorId) => {
+  const res = await api.patch(`/admin/appointments/${appointmentId}/reassign`, { counselorId });
+  return res.data.data; // the appointment, now with its new counselor
+};

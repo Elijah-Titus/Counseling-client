@@ -15,9 +15,9 @@ const tabs = {
 };
 
 const counselors = [
-  { name: "Counselor name", role: "Individual counseling" },
-  { name: "Counselor name", role: "Relationship support" },
-  { name: "Counselor name", role: "Stress & anxiety" },
+  { name: "Elijah Ogah Titus", role: "Individual counseling" },
+  { name: "Ochai Emmanuel", role: "Relationship support" },
+  { name: "Justina Ene", role: "Stress & anxiety" },
 ];
 
 export default function AboutIntro() {

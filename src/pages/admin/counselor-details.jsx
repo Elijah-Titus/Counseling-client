@@ -13,6 +13,7 @@ import {
 import Button from "../../components/ui/button";
 import ConfirmDialog from "../../components/common/confirm-dialog";
 import PasswordRevealModal from "../../features/admin/password-reveal-modal";
+import BlockedDeactivationModal from "../../features/admin/blocked-deactivation-modal";
 import {
   getAllAppointments,
   getCounselor,
@@ -21,17 +22,6 @@ import {
 } from "../../api/admin";
 import { getErrorMessage } from "../../api/axios";
 import { formatLagosDate, formatLagosTime } from "../../utils/lagos-time";
-
-const statusInfo = {
-  AWAITING: { label: "Scheduled", style: "bg-indigo-100 text-indigo-700" },
-  COMPLETED: { label: "Completed", style: "bg-emerald-100 text-emerald-700" },
-  CANCELLED: { label: "Cancelled", style: "bg-slate-200 text-slate-600" },
-};
-
-const statusBadge = (a) =>
-  a.abandoned
-    ? { label: "Missed", style: "bg-amber-100 text-amber-700" }
-    : statusInfo[a.status] || statusInfo.AWAITING;
 
 const formatDob = (value) =>
   new Date(`${value.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-GB", {
@@ -70,6 +60,7 @@ export default function CounselorDetails() {
   const [confirm, setConfirm] = useState(null); // "status" | "reset" | null
   const [actionLoading, setActionLoading] = useState(false);
   const [reveal, setReveal] = useState(null);
+  const [blocked, setBlocked] = useState(null);
 
   const showNotice = (type, text) => {
     setNotice({ type, text });
@@ -124,17 +115,29 @@ export default function CounselorDetails() {
     };
   }, [id]);
 
+  const refused = (err) =>
+    err.response?.status === 409 && Array.isArray(err.response?.data?.errors?.blocked);
+
+  const changeStatus = async () => {
+    const updated = await setUserStatus(counselor.id, !counselor.isActive);
+    setCounselor((prev) => ({ ...prev, isActive: updated.isActive }));
+
+    const moved = updated.reassigned ?? 0;
+    showNotice(
+      "success",
+      `${counselor.name} has been ${updated.isActive ? "activated" : "deactivated"}.` +
+        (moved > 0
+          ? ` ${moved} upcoming ${moved === 1 ? "appointment was" : "appointments were"} given to other counselors.`
+          : "")
+    );
+  };
+
   const handleConfirm = async () => {
     try {
       setActionLoading(true);
 
       if (confirm === "status") {
-        const updated = await setUserStatus(counselor.id, !counselor.isActive);
-        setCounselor((prev) => ({ ...prev, isActive: updated.isActive }));
-        showNotice(
-          "success",
-          `${counselor.name} has been ${updated.isActive ? "activated" : "deactivated"}.`
-        );
+        await changeStatus();
       } else {
         const { password } = await resetCounselorPassword(counselor.id);
         setReveal({
@@ -145,10 +148,31 @@ export default function CounselorDetails() {
         });
       }
     } catch (err) {
-      showNotice("error", getErrorMessage(err, "Something went wrong. Please try again."));
+      if (confirm === "status" && refused(err)) {
+        setBlocked({ message: err.response.data.message, items: err.response.data.errors.blocked });
+      } else {
+        showNotice("error", getErrorMessage(err, "Something went wrong. Please try again."));
+      }
     } finally {
       setActionLoading(false);
       setConfirm(null);
+    }
+  };
+
+  const retryDeactivation = async () => {
+    try {
+      setActionLoading(true);
+      await changeStatus();
+      setBlocked(null);
+    } catch (err) {
+      if (refused(err)) {
+        setBlocked({ message: err.response.data.message, items: err.response.data.errors.blocked });
+      } else {
+        setBlocked(null);
+        showNotice("error", getErrorMessage(err, "Something went wrong. Please try again."));
+      }
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -353,7 +377,7 @@ export default function CounselorDetails() {
         message={
           confirm === "status"
             ? counselor.isActive
-              ? `This will deactivate ${counselor.name}'s account and sign them out everywhere. You can activate it again at any time.`
+              ? `This will deactivate ${counselor.name}'s account and sign them out everywhere. Their upcoming appointments are given to other counselors first. If any can't be moved, nothing changes. You can activate the account again at any time.`
               : `This will activate ${counselor.name}'s account again.`
             : `A new temporary password will be generated for ${counselor.name}, and they will be signed out everywhere.`
         }
@@ -367,6 +391,17 @@ export default function CounselorDetails() {
       />
 
       <PasswordRevealModal data={reveal} onDone={() => setReveal(null)} />
+
+      {blocked && (
+        <BlockedDeactivationModal
+          counselor={counselor}
+          message={blocked.message}
+          items={blocked.items}
+          retrying={actionLoading}
+          onClose={() => setBlocked(null)}
+          onRetry={retryDeactivation}
+        />
+      )}
     </div>
   );
 }

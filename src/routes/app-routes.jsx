@@ -11,6 +11,7 @@ import Login from "../pages/auth/login";
 import Register from "../pages/auth/register";
 import MyAppointments from "../pages/client/my-appointments";
 import BookAppointment from "../pages/client/book-appointment";
+import MyTestimonial from "../pages/client/my-testimonial";
 import CounselorAppointments from "../pages/counselor/counselor-appointments";
 import AppointmentDetails from "../pages/shared/appointment-details";
 import ChangePassword from "../pages/account/change-password";
@@ -62,6 +63,7 @@ export default function AppRoutes() {
           <Route path="appointments/:id" element={<AppointmentDetails />} />
           <Route path="messages" element={<Messages />} />
           <Route path="book" element={<BookAppointment />} />
+          <Route path="testimonial" element={<MyTestimonial />} />
           <Route path="notifications" element={<Notifications />} />
         </Route>
 

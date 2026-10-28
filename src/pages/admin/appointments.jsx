@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   AlertCircle,
   CalendarCheck,
@@ -14,20 +15,20 @@ import Input from "../../components/ui/input";
 import Button from "../../components/ui/button";
 import Pagination from "../../components/ui/pagination";
 import AdminAppointmentsTable from "../../features/admin/admin-appointments-table";
+import ReassignModal from "../../features/admin/reassign-modal";
 import { getAllAppointments, getAppointmentCounts } from "../../api/admin";
 import { getErrorMessage } from "../../api/axios";
 import { addDaysToDateString, lagosDayStartUtc } from "../../utils/lagos-time";
-import { useSearchParams } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
-   const stats = [
-     { view: "upcoming", label: "Upcoming", icon: CalendarCheck, tone: "bg-indigo-100 text-indigo-600" },
-     { view: "awaitingReport", label: "Awaiting report", icon: FileText, tone: "bg-violet-100 text-violet-600" },
-     { view: "completed", label: "Completed", icon: CheckCircle2, tone: "bg-emerald-100 text-emerald-600" },
-     { view: "missed", label: "Missed", icon: UserX, tone: "bg-amber-100 text-amber-600" },
-     { view: "cancelled", label: "Cancelled", icon: CalendarX, tone: "bg-slate-200 text-slate-600" },
-   ];
+const stats = [
+  { view: "upcoming", label: "Upcoming", icon: CalendarCheck, tone: "bg-indigo-100 text-indigo-600" },
+  { view: "awaitingReport", label: "Awaiting report", icon: FileText, tone: "bg-violet-100 text-violet-600" },
+  { view: "completed", label: "Completed", icon: CheckCircle2, tone: "bg-emerald-100 text-emerald-600" },
+  { view: "missed", label: "Missed", icon: UserX, tone: "bg-amber-100 text-amber-600" },
+  { view: "cancelled", label: "Cancelled", icon: CalendarX, tone: "bg-slate-200 text-slate-600" },
+];
 
 const viewLabels = Object.fromEntries(stats.map((s) => [s.view, s.label]));
 
@@ -49,29 +50,36 @@ function FilterChip({ label, onRemove }) {
 }
 
 export default function AdminAppointments() {
-const [searchParams] = useSearchParams();
-const [filters, setFilters] = useState(() => {
-  const counselorId = searchParams.get("counselorId");
-  const clientId = searchParams.get("clientId");
+  const [searchParams] = useSearchParams();
+  const [filters, setFilters] = useState(() => {
+    const counselorId = searchParams.get("counselorId");
+    const clientId = searchParams.get("clientId");
 
-  return {
-    ...emptyFilters,
-    counselor: counselorId
-      ? { id: counselorId, name: searchParams.get("counselorName") || "Selected counselor" }
-      : null,
-    client: clientId
-      ? { id: clientId, name: searchParams.get("clientName") || "Selected client" }
-      : null,
-  };
-});
+    return {
+      ...emptyFilters,
+      counselor: counselorId
+        ? { id: counselorId, name: searchParams.get("counselorName") || "Selected counselor" }
+        : null,
+      client: clientId
+        ? { id: clientId, name: searchParams.get("clientName") || "Selected client" }
+        : null,
+    };
+  });
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
+  const [reassignTarget, setReassignTarget] = useState(null);
+  const [notice, setNotice] = useState("");
 
   const reload = () => setReloadKey((key) => key + 1);
+
+  const showNotice = (text) => {
+    setNotice(text);
+    setTimeout(() => setNotice(""), 7000);
+  };
 
   // Any filter change goes back to page 1
   const updateFilters = (patch) => setFilters((prev) => ({ ...prev, ...patch, page: 1 }));
@@ -124,7 +132,7 @@ const [filters, setFilters] = useState(() => {
     };
   }, [filters, reloadKey, rangeInvalid]);
 
-  // The four counts on the cards (not affected by the filters)
+  // The counts on the cards (not affected by the filters)
   useEffect(() => {
     let cancelled = false;
 
@@ -146,6 +154,15 @@ const [filters, setFilters] = useState(() => {
 
   return (
     <div className="space-y-5">
+      {notice && (
+        <div
+          role="status"
+          className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700"
+        >
+          <CheckCircle2 size={18} /> {notice}
+        </div>
+      )}
+
       {/* Count cards, also quick filters */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map(({ view, label, icon: Icon, tone }) => {
@@ -264,6 +281,7 @@ const [filters, setFilters] = useState(() => {
                 appointments={items}
                 onFilterClient={(client) => updateFilters({ client })}
                 onFilterCounselor={(counselor) => updateFilters({ counselor })}
+                onReassign={setReassignTarget}
               />
             </div>
           )}
@@ -279,6 +297,23 @@ const [filters, setFilters] = useState(() => {
           />
         )}
       </section>
+
+      {reassignTarget && (
+        <ReassignModal
+          appointmentId={reassignTarget.id}
+          startAt={reassignTarget.startAt}
+          endAt={reassignTarget.endAt}
+          currentCounselorId={reassignTarget.counselor?.id}
+          onClose={() => setReassignTarget(null)}
+          onReassigned={(updated) => {
+            setReassignTarget(null);
+            showNotice(
+              `Appointment moved to ${updated.counselor?.name}. The client and the new counselor have been notified.`
+            );
+            reload();
+          }}
+        />
+      )}
     </div>
   );
 }

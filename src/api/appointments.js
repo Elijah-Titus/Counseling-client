@@ -11,8 +11,6 @@ export const bookAppointment = async ({ startAt, hours, topic, description }) =>
   return res.data.data; // the new appointment, with the assigned counselor
 };
 
-
-
 export const getAppointments = async ({ scope = "upcoming", page = 1, limit = 10 } = {}) => {
   const res = await api.get("/appointments", { params: { scope, page, limit } });
   return normalizePage(res.data.data, page, limit); // { items, total }
@@ -36,4 +34,12 @@ export const getAppointment = async (id) => {
 export const setMeetLink = async (id, meetLink) => {
   const res = await api.patch(`/appointments/${id}/meet-link`, { meetLink });
   return res.data.data;
+};
+
+export const createFollowUp = async (appointmentId, { startAt, hours }) => {
+  const res = await api.post(`/appointments/${appointmentId}/follow-up`, {
+    startAt,
+    hours,
+  });
+  return res.data.data; // the new AWAITING appointment (no Meet link yet)
 };
