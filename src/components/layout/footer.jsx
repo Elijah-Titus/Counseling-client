@@ -12,7 +12,6 @@ const links = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
   { label: "Services", to: "/services" },
-  { label: "Resources", to: "/resources" },
 ];
 
 const socials = [
