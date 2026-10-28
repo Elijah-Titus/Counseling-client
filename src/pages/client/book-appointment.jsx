@@ -156,7 +156,7 @@ export default function BookAppointment() {
         </div>
         <h2 className="mt-5 text-2xl font-extrabold text-blue-950">Your session is booked</h2>
         <p className="mt-2 text-sm text-slate-600">
-          You've been matched with{" "}
+          Your counselor is{" "}
           <span className="font-semibold text-blue-950">{booked.counselor?.name}</span>.
         </p>
 

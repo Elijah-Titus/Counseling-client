@@ -29,6 +29,8 @@ import Notifications from "../pages/shared/notifications";
 import Messages from "../pages/shared/messages";
 import About from "../pages/public/about";
 import Services from "../pages/public/services";
+import PrivacyPolicy from "../pages/public/privacy-policy";
+import Terms from "../pages/public/terms";
 import ScrollToTop from "../components/common/scroll-to-top";
 
 export default function AppRoutes() {
@@ -41,6 +43,8 @@ export default function AppRoutes() {
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
         </Route>
 
         {/* Sign in and register */}
